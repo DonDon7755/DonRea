@@ -1,0 +1,39 @@
+# Dependencies for Ransomware Detection & Mitigation Framework
+
+# Web interface dependencies
+Flask==2.3.3
+Flask-Login==0.6.2
+Flask-SQLAlchemy==3.1.1
+Flask-WTF==1.2.1
+email-validator==2.1.0
+Werkzeug==2.3.7
+gunicorn==21.2.0
+SQLAlchemy
+
+# Machine learning dependencies
+numpy==1.26.3
+tensorflow==2.15.0
+scikit-learn==1.3.2
+
+# File and process monitoring
+watchdog==3.0.0
+psutil==5.9.8
+pefile==2023.2.7
+
+# Desktop GUI dependencies
+PyQt6==6.6.1
+# Tkinter is included in Python standard library
+
+# Security and utilities
+cryptography==41.0.7
+
+# Note: The following dependencies are automatically installed as requirements for the above packages:
+# - cffi
+# - pycparser
+# - joblib
+# - scipy
+# - threadpoolctl
+# - tensorboard
+# - keras
+# - tensorflow-estimator
+# and others
