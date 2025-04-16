@@ -1,0 +1,248 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Panel - Ransomware Detection & Mitigation Framework{% endblock %}
+
+{% block content %}
+{% if not current_user.is_admin %}
+<div class="alert alert-danger" role="alert">
+    <i class="fas fa-exclamation-triangle me-2"></i> You don't have permission to access the admin panel.
+</div>
+{% else %}
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-md-flex justify-content-between align-items-center">
+            <h1 class="h3 mb-3 mb-md-0">Admin Panel</h1>
+        </div>
+    </div>
+</div>
+
+<!-- Admin Tabs -->
+<ul class="nav nav-tabs mb-4">
+    <li class="nav-item">
+        <a class="nav-link active" id="system-tab" data-bs-toggle="tab" href="#system">
+            <i class="fas fa-server me-2"></i> System Overview
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" id="logs-tab" data-bs-toggle="tab" href="#logs">
+            <i class="fas fa-clipboard-list me-2"></i> System Logs
+        </a>
+    </li>
+</ul>
+
+<div class="tab-content">
+    <!-- System Overview Tab -->
+    <div class="tab-pane fade show active" id="system">
+        <!-- System Stats -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-chart-line me-2"></i> System Statistics
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="systemStats" height="100" data-stats='[
+                            {"date": "2023-01-01", "cpu": 25, "memory": 40},
+                            {"date": "2023-01-02", "cpu": 30, "memory": 45},
+                            {"date": "2023-01-03", "cpu": 35, "memory": 50},
+                            {"date": "2023-01-04", "cpu": 40, "memory": 60},
+                            {"date": "2023-01-05", "cpu": 20, "memory": 55}
+                        ]'></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- System Settings -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-cogs me-2"></i> System Settings
+                        </h5>
+                        <a href="{{ url_for('settings') }}" class="btn btn-sm btn-primary">Manage Settings</a>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Setting</th>
+                                        <th>Value</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for setting in settings %}
+                                    <tr>
+                                        <td>{{ setting.key }}</td>
+                                        <td>{{ setting.value }}</td>
+                                        <td>{{ setting.description }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-bolt me-2"></i> Quick Actions
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-3">
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#scanModal">
+                                <i class="fas fa-search me-2"></i> Initiate System Scan
+                            </button>
+                            
+                            <a href="{{ url_for('view_quarantine') }}" class="btn btn-warning">
+                                <i class="fas fa-virus-slash me-2"></i> Manage Quarantine
+                            </a>
+                            
+                            <button type="button" id="monitoringToggle" class="btn {% if stats.monitoring_status %}btn-danger{% else %}btn-success{% endif %}" onclick="toggleMonitoring()">
+                                {% if stats.monitoring_status %}
+                                <i class="fas fa-stop me-2"></i> Disable Monitoring
+                                {% else %}
+                                <i class="fas fa-play me-2"></i> Enable Monitoring
+                                {% endif %}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-info-circle me-2"></i> System Information
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>CNN Model Status</span>
+                                <span class="badge bg-success">Loaded</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>LSTM Model Status</span>
+                                <span class="badge bg-success">Loaded</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>File Monitoring</span>
+                                <span class="badge {% if stats.monitoring_status %}bg-success{% else %}bg-danger{% endif %}">{% if stats.monitoring_status %}Active{% else %}Inactive{% endif %}</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>Process Monitoring</span>
+                                <span class="badge {% if stats.monitoring_status %}bg-success{% else %}bg-danger{% endif %}">{% if stats.monitoring_status %}Active{% else %}Inactive{% endif %}</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- System Logs Tab -->
+    <div class="tab-pane fade" id="logs">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-clipboard-list me-2"></i> System Logs
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table id="logsTable" class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>Level</th>
+                                <th>Message</th>
+                                <th>User</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if logs %}
+                                {% for log in logs %}
+                                <tr>
+                                    <td>{{ log.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                                    <td>
+                                        {% if log.level == 'ERROR' or log.level == 'CRITICAL' %}
+                                        <span class="badge bg-danger">{{ log.level }}</span>
+                                        {% elif log.level == 'WARNING' %}
+                                        <span class="badge bg-warning">{{ log.level }}</span>
+                                        {% elif log.level == 'INFO' %}
+                                        <span class="badge bg-info">{{ log.level }}</span>
+                                        {% else %}
+                                        <span class="badge bg-secondary">{{ log.level }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ log.message }}</td>
+                                    <td>
+                                        {% if log.user %}
+                                        {{ log.user.username }}
+                                        {% else %}
+                                        <span class="text-muted">System</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="4" class="text-center">No logs found</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scan Modal -->
+<div class="modal fade" id="scanModal" tabindex="-1" aria-labelledby="scanModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="scanModalLabel">Initiate System Scan</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="scanForm" action="{{ url_for('initiate_scan') }}" method="post">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="scanPath" class="form-label">Scan Path</label>
+                        <input type="text" class="form-control" id="scanPath" name="scan_path" placeholder="Enter path to scan (e.g., C:\Users)" value="C:\" required>
+                        <div class="form-text">Specify the directory you want to scan for ransomware threats.</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" id="scanBtn" class="btn btn-primary">
+                        <i class="fas fa-search me-2"></i> Start Scan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+{% endblock %}

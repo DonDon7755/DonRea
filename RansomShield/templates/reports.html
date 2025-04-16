@@ -1,0 +1,191 @@
+{% extends 'base.html' %}
+
+{% block title %}Reports - Ransomware Detection & Mitigation Framework{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-md-flex justify-content-between align-items-center">
+            <h1 class="h3 mb-3 mb-md-0">Detection Reports</h1>
+            
+            <div class="d-flex gap-2">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#scanModal">
+                    <i class="fas fa-search me-2"></i> Initiate Scan
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Risk Level Stats -->
+<div class="row mb-4">
+    <div class="col-md-4 mb-3 mb-md-0">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <div class="display-4 text-success mb-2">{{ risk_levels.low }}</div>
+                <h5>Low Risk Files</h5>
+                <p class="text-muted small">Risk score < 0.3</p>
+                <div class="progress">
+                    <div class="progress-bar bg-success" role="progressbar" style="width: {{ (risk_levels.low / (risk_levels.low + risk_levels.medium + risk_levels.high)) * 100 }}%" aria-valuenow="{{ risk_levels.low }}" aria-valuemin="0" aria-valuemax="{{ risk_levels.low + risk_levels.medium + risk_levels.high }}"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-3 mb-md-0">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <div class="display-4 text-warning mb-2">{{ risk_levels.medium }}</div>
+                <h5>Medium Risk Files</h5>
+                <p class="text-muted small">Risk score 0.3 - 0.7</p>
+                <div class="progress">
+                    <div class="progress-bar bg-warning" role="progressbar" style="width: {{ (risk_levels.medium / (risk_levels.low + risk_levels.medium + risk_levels.high)) * 100 }}%" aria-valuenow="{{ risk_levels.medium }}" aria-valuemin="0" aria-valuemax="{{ risk_levels.low + risk_levels.medium + risk_levels.high }}"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <div class="display-4 text-danger mb-2">{{ risk_levels.high }}</div>
+                <h5>High Risk Files</h5>
+                <p class="text-muted small">Risk score > 0.7</p>
+                <div class="progress">
+                    <div class="progress-bar bg-danger" role="progressbar" style="width: {{ (risk_levels.high / (risk_levels.low + risk_levels.medium + risk_levels.high)) * 100 }}%" aria-valuenow="{{ risk_levels.high }}" aria-valuemin="0" aria-valuemax="{{ risk_levels.low + risk_levels.medium + risk_levels.high }}"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Detection Results -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-shield-virus me-2"></i> Detection Results
+                </h5>
+                {% if current_user.is_admin %}
+                <div>
+                    <button type="button" class="btn btn-sm btn-outline-warning">
+                        <i class="fas fa-file-export me-1"></i> Export Results
+                    </button>
+                </div>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table id="detectionResultsTable" class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>File Path</th>
+                                <th>Risk Level</th>
+                                <th>Detection Method</th>
+                                <th>File Size</th>
+                                {% if current_user.is_admin %}
+                                <th>Actions</th>
+                                {% endif %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if results %}
+                                {% for result in results %}
+                                <tr data-result-id="{{ result.id }}">
+                                    <td>{{ result.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                                    <td>
+                                        <span class="text-truncate d-inline-block" style="max-width: 250px;" title="{{ result.file_path }}">
+                                            <i class="fas fa-file me-1"></i> {{ result.file_path }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="me-2">
+                                                {% if result.risk_level < 0.3 %}
+                                                <span class="badge bg-success">Low</span>
+                                                {% elif result.risk_level < 0.7 %}
+                                                <span class="badge bg-warning">Medium</span>
+                                                {% else %}
+                                                <span class="badge bg-danger">High</span>
+                                                {% endif %}
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <div class="risk-indicator">
+                                                    <div class="risk-indicator-fill" style="width: {{ result.risk_level * 100 }}%"></div>
+                                                </div>
+                                            </div>
+                                            <div class="ms-2">
+                                                {{ (result.risk_level * 100) | int }}%
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>{{ result.detection_method }}</td>
+                                    <td>{{ (result.file_size / 1024) | int }} KB</td>
+                                    {% if current_user.is_admin %}
+                                    <td class="result-status">
+                                        {% set quarantined = False %}
+                                        {% for item in result.alerts %}
+                                            {% if item.message and 'quarantined' in item.message | lower %}
+                                                {% set quarantined = True %}
+                                            {% endif %}
+                                        {% endfor %}
+                                        
+                                        {% if quarantined %}
+                                            <span class="text-muted">Quarantined</span>
+                                        {% elif result.risk_level >= 0.3 %}
+                                            <button type="button" class="btn btn-sm btn-warning" data-quarantine-id="{{ result.id }}" onclick="quarantineFile({{ result.id }})">
+                                                <i class="fas fa-virus-slash me-1"></i> Quarantine
+                                            </button>
+                                        {% else %}
+                                            <span class="text-muted">No action needed</span>
+                                        {% endif %}
+                                    </td>
+                                    {% endif %}
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="{% if current_user.is_admin %}6{% else %}5{% endif %}" class="text-center">No detection results found</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scan Modal -->
+<div class="modal fade" id="scanModal" tabindex="-1" aria-labelledby="scanModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="scanModalLabel">Initiate Scan</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="scanForm" action="{{ url_for('initiate_scan') }}" method="post">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="scanPath" class="form-label">Scan Path</label>
+                        <input type="text" class="form-control" id="scanPath" name="scan_path" placeholder="Enter path to scan (e.g., C:\Users)" required>
+                        <div class="form-text">Specify the directory you want to scan for ransomware threats.</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" id="scanBtn" class="btn btn-primary">
+                        <i class="fas fa-search me-2"></i> Start Scan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+{% endblock %}

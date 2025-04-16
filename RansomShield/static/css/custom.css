@@ -1,0 +1,309 @@
+/* Custom CSS for Ransomware Detection & Mitigation Framework */
+
+/* Custom variables */
+:root {
+    --primary-bg: #1a1a1a;
+    --secondary-bg: #292929;
+    --card-bg: #333333;
+    --card-header-bg: #404040;
+    --border-color: #444444;
+    --text-color: #f0f0f0;
+    --text-muted: #a0a0a0;
+    --accent-color: #0d6efd;
+    --success-color: #28a745;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+    --info-color: #17a2b8;
+}
+
+/* General styles */
+body {
+    padding-top: 56px;
+    background-color: var(--primary-bg);
+    color: var(--text-color);
+}
+
+.text-muted {
+    color: var(--text-muted) !important;
+}
+
+.bg-dark {
+    background-color: var(--secondary-bg) !important;
+}
+
+/* Card styling */
+.card {
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1.5rem;
+}
+
+.card-header {
+    background-color: var(--card-header-bg);
+    border-bottom-color: var(--border-color);
+    font-weight: 600;
+    padding: 0.75rem 1.25rem;
+}
+
+.card-body {
+    padding: 1.25rem;
+}
+
+/* Navbar customization */
+.navbar {
+    background-color: var(--secondary-bg) !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+/* Custom sidebar for admin panel */
+.sidebar {
+    position: fixed;
+    top: 56px;
+    left: 0;
+    width: 250px;
+    height: calc(100vh - 56px);
+    background-color: var(--secondary-bg);
+    border-right: 1px solid var(--border-color);
+    padding-top: 1rem;
+    z-index: 100;
+    overflow-y: auto;
+}
+
+.sidebar-item {
+    padding: 0.75rem 1.25rem;
+    color: var(--text-color);
+    text-decoration: none;
+    display: block;
+    border-left: 3px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.sidebar-item:hover, .sidebar-item.active {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-left-color: var(--accent-color);
+}
+
+.sidebar-item i {
+    margin-right: 8px;
+    width: 20px;
+    text-align: center;
+}
+
+.main-content {
+    margin-left: 250px;
+    padding: 1.5rem;
+}
+
+/* For mobile view */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 0;
+        overflow: hidden;
+        transition: width 0.3s ease;
+    }
+    
+    .sidebar.show {
+        width: 250px;
+    }
+    
+    .main-content {
+        margin-left: 0;
+    }
+}
+
+/* Custom styles for dashboard widgets */
+.stat-card {
+    text-align: center;
+    padding: 1.5rem;
+    border-radius: 8px;
+    transition: transform 0.2s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+}
+
+.stat-card i {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.stat-card h3 {
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.stat-card p {
+    color: var(--text-muted);
+    margin-bottom: 0;
+}
+
+/* Alert styling */
+.alert {
+    border-radius: 8px;
+    border-width: 0;
+    padding: 1rem 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Badge styling */
+.badge {
+    font-weight: 500;
+    padding: 0.35em 0.65em;
+    border-radius: 4px;
+}
+
+/* Table styling */
+.table {
+    color: var(--text-color);
+    margin-bottom: 0;
+    border-color: var(--border-color);
+}
+
+.table th {
+    font-weight: 600;
+    border-top: none;
+    border-bottom-width: 1px;
+    background-color: var(--card-header-bg);
+}
+
+.table td {
+    vertical-align: middle;
+    border-color: var(--border-color);
+}
+
+/* DataTables customization */
+.dataTables_wrapper .dataTables_length,
+.dataTables_wrapper .dataTables_filter,
+.dataTables_wrapper .dataTables_info,
+.dataTables_wrapper .dataTables_paginate {
+    color: var(--text-color) !important;
+}
+
+.dataTables_wrapper .dataTables_length select,
+.dataTables_wrapper .dataTables_filter input {
+    background-color: var(--secondary-bg) !important;
+    color: var(--text-color) !important;
+    border-color: var(--border-color) !important;
+    padding: 0.375rem 0.75rem;
+    border-radius: 4px;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    color: var(--text-color) !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current, 
+.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+    background: var(--accent-color) !important;
+    color: white !important;
+    border-color: var(--accent-color) !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    background: rgba(13, 110, 253, 0.1) !important;
+    color: var(--accent-color) !important;
+    border-color: transparent !important;
+}
+
+/* Custom form styling */
+.form-control, .form-select {
+    background-color: var(--secondary-bg);
+    color: var(--text-color);
+    border-color: var(--border-color);
+}
+
+.form-control:focus, .form-select:focus {
+    background-color: var(--secondary-bg);
+    color: var(--text-color);
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.form-control::placeholder {
+    color: var(--text-muted);
+    opacity: 0.7;
+}
+
+/* Risk level indicators */
+.risk-indicator {
+    width: 100%;
+    height: 8px;
+    border-radius: 4px;
+    background-color: #e9ecef;
+    overflow: hidden;
+}
+
+.risk-indicator-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.risk-low .risk-indicator-fill {
+    background-color: var(--success-color);
+}
+
+.risk-medium .risk-indicator-fill {
+    background-color: var(--warning-color);
+}
+
+.risk-high .risk-indicator-fill {
+    background-color: var(--danger-color);
+}
+
+/* Login and register forms */
+.auth-container {
+    min-height: calc(100vh - 56px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 0;
+}
+
+.auth-card {
+    max-width: 450px;
+    width: 100%;
+}
+
+.auth-logo {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.auth-logo i {
+    font-size: 3rem;
+    color: var(--accent-color);
+}
+
+/* Settings page styling */
+.settings-section {
+    margin-bottom: 2rem;
+}
+
+.settings-section h3 {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* Animation for loading states */
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+.loading {
+    animation: pulse 1.5s infinite;
+}

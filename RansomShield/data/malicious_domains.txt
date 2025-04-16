@@ -1,0 +1,27 @@
+# List of known malicious domains associated with ransomware
+# Format: one domain per line
+# These are sample domains commonly associated with ransomware activities
+
+# Example known ransomware C&C domains (for demonstration only)
+torrentlocker.com
+cryptxxx.com
+locky-ransomware.com
+cerber-ransomware.net
+cryptolocker.info
+tescrypt.com
+cryptowall.info
+onion.cryptowall5.com
+petya-ransomware.com
+jigsaw-ransomware.com
+cryptodefense.net
+wannacrypt.com
+badrabbit.net
+wannacry-payments.info
+gandcrab.bit
+samsam-decrypt.com
+cryp1.com
+
+# TOR hidden service domains often used by ransomware
+cryptowall5opnh6fv.onion
+qw7tbwshxp332ixk.onion
+torlock6fafodpyj.onion

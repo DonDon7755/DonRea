@@ -1,0 +1,21 @@
+# List of known malicious IPs associated with ransomware
+# Format: one IP address per line
+# These are sample IP addresses commonly associated with ransomware activities
+
+# Example known malicious IPs (for demonstration only)
+185.141.63.120
+103.55.28.148
+192.99.178.145
+91.121.30.169
+45.32.156.186
+51.254.181.175
+173.254.236.124
+87.98.175.85
+95.211.143.246
+77.72.133.246
+
+# TOR exit nodes known to be used by ransomware
+176.10.99.200
+212.83.40.239
+89.234.157.254
+216.218.222.12

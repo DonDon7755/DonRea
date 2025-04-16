@@ -1,0 +1,162 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+
+actor "User" as User
+actor "Administrator (Power User)" as Admin
+actor "Windows OS / File System" as OS
+
+package "Ransomware Detection & Mitigation Framework" {
+  
+  usecase "Initiate Scan" as UC1
+  usecase "Receive Alerts" as UC2
+  usecase "View Logs & Reports" as UC3
+  usecase "Configure Detection Settings" as UC4
+  usecase "Initiate Mitigation Action" as UC5
+  usecase "Manage Quarantine" as UC6
+  usecase "Log Events" as UC7
+}
+
+User --> UC1
+User --> UC2
+User --> UC3
+
+Admin --> UC1
+Admin --> UC2
+Admin --> UC3
+Admin --> UC4
+Admin --> UC5
+Admin --> UC6
+
+UC1 --> UC7 : Logs Scan
+UC2 --> UC7 : Logs Alerts
+UC5 --> UC7 : Logs Mitigation Actions
+
+OS --> UC1 : Provides files/processes
+UC5 --> OS : Quarantine/Delete files
+
+@enduml
+
+
+
+
+
+
+DFD
+
+@startuml
+skinparam rectangle {
+  BackgroundColor #FDF6E3
+  BorderColor Black
+}
+
+actor "User" as User
+actor "Administrator (Power User)" as Admin
+actor "Windows OS / File System" as OS
+
+rectangle "Ransomware Detection" as Detection
+rectangle "Alert Generation" as Alerting
+rectangle "Mitigation Actions" as Mitigation
+rectangle "System Logging & Reporting" as Logging
+
+database "Detection Models Data Store" as Models
+database "System Logs Data Store" as Logs
+database "Detection Results Data Store" as Data
+database "Quarantine Data Store" as Quarantine
+
+' User and Admin common interactions
+User --> Detection : Initiate scan request
+Admin --> Detection : Initiate scan / Configure settings
+OS --> Detection : Provide files/processes
+
+Detection --> Alerting : Detection results (files, risk level)
+Detection --> Models : Update ML models
+Detection --> Data : Store detection data
+
+Alerting --> User : Send alerts
+Alerting --> Admin : Send alerts
+
+' Admin exclusive actions
+Admin --> Mitigation : Initiate mitigation action
+Mitigation --> Detection : Mitigation feedback
+Mitigation --> Quarantine : Store quarantined files
+
+' Logging flows
+Detection --> Logging : Log detection results
+Alerting --> Logging : Log alerts
+Mitigation --> Logging : Log mitigation actions
+Logging --> Logs : Store system logs
+
+@enduml
+
+
+CD
+
+@startuml
+skinparam rectangle {
+  BackgroundColor #FDF6E3
+  BorderColor Black
+}
+
+actor "User" as User
+actor "Administrator (Power User)" as Admin
+actor "Windows OS / File System" as OS
+
+rectangle "Ransomware Detection & Mitigation Framework" as System {
+    rectangle "CNN + LSTM Anomaly Detection"
+    rectangle "Threat Mitigation & Quarantine"
+    rectangle "System Logging & Reporting"
+}
+
+User --> System : Initiates scan request\nReceives alerts
+Admin --> System : All User actions +\nConfigure settings\nInitiate mitigation\nAccess detailed reports
+OS --> System : Provides files & processes
+System --> OS : Quarantine/Delete malicious files
+
+System --> User : Sends alerts & logs
+System --> Admin : Sends alerts, detailed logs & reports
+
+@enduml
+
+
+Suquence diagram
+
+@startuml
+actor "User" as User
+actor "Administrator" as Admin
+participant "Ransomware Detection Framework" as System
+participant "CNN + LSTM Model" as Model
+participant "Windows OS / File System" as OS
+participant "Quarantine Module" as Quarantine
+participant "Log System" as Logs
+
+== Normal User Flow ==
+User -> System : Initiate Scan
+System -> OS : Request files/processes
+OS --> System : Provide files/processes
+System -> Model : Analyze files (CNN + LSTM)
+Model --> System : Detection Results
+System -> User : Send Alerts
+System -> Logs : Log detection result
+
+== Admin Flow (All User Actions + More) ==
+Admin -> System : Initiate Scan
+System -> OS : Request files/processes
+OS --> System : Provide files/processes
+System -> Model : Analyze files (CNN + LSTM)
+Model --> System : Detection Results
+System -> Admin : Send Alerts
+System -> Logs : Log detection result
+
+Admin -> System : Configure settings/initiate mitigation
+System -> Quarantine : Quarantine/Delete file
+Quarantine --> System : Quarantine status
+System -> Admin : Provide detailed reports/logs
+System -> Logs : Log mitigation & config actions
+
+@enduml
+
+
+
+
+
